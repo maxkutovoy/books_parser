@@ -64,6 +64,7 @@ def main():
     images_dir = 'images'
     Path(books_dir).mkdir(parents=True, exist_ok=True)
     Path(images_dir).mkdir(parents=True, exist_ok=True)
+
     for book_id in range(start_id, end_id + 1):
         try:
             book_url = f'https://tululu.org/b{book_id}'
@@ -83,7 +84,6 @@ def main():
             print(f'Название: {book_info["book_title"]}')
             print(f'Автор: {book_info["author"]}')
             print()
-
         except requests.HTTPError:
             pass
 
