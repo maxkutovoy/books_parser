@@ -49,6 +49,13 @@ def get_book_info(book_id):
         return None, None
     img = soup.find(class_="bookimage").find('img')['src']
     img_url = (urljoin('https://tululu.org', img))
+    try:
+        comments = soup.find_all('div', class_="texts")
+        for comment in comments:
+            c = comment.find('span', class_='black')
+            print(f'Комментарий: {c.text}')
+    except:
+        pass
     return book_title, img_url
 
 
@@ -69,7 +76,6 @@ def download_image(url, folder='images/'):
     response.raise_for_status()
     parsed_url = urlsplit(url)
     filename = os.path.split(unquote(parsed_url.path))[1]
-    print(filename)
     filepath = os.path.join(folder, filename)
     with open(f'{filepath}', 'wb') as book:
         book.write(response.content)
@@ -82,7 +88,6 @@ if __name__ == '__main__':
     Path(images_dir).mkdir(parents=True, exist_ok=True)
     for book_id in range(1, 11):
         try:
-            print(get_book_info(book_id))
             book_title, img_url = get_book_info(book_id)
             if book_title is not None:
                 download_txt(book_id, book_title, books_dir)
