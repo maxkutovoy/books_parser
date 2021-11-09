@@ -112,4 +112,4 @@ myenv/
 # mypy
 .mypy_cache/
 
-/Books/
+/books/
