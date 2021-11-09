@@ -1,6 +1,6 @@
+import argparse
 import os
 from pathlib import Path
-from pprint import pprint
 from urllib.parse import urljoin, unquote, urlsplit
 
 from bs4 import BeautifulSoup
@@ -52,12 +52,19 @@ def download_image(response, img_url, folder='images/'):
         book.write(response.content)
 
 
-if __name__ == '__main__':
+def main():
+    parser = argparse.ArgumentParser(description='Программа скачивает с сайта https://tululu.org')
+    parser.add_argument('start_id', help='Начальная страница', nargs='?', default=1, type=int)
+    parser.add_argument('end_page', help='Конечная страница', nargs='?', default=10, type=int)
+    args = parser.parse_args()
+    start_id = args.start_id
+    end_id = args.end_id
+
     books_dir = 'books'
     images_dir = 'images'
     Path(books_dir).mkdir(parents=True, exist_ok=True)
     Path(images_dir).mkdir(parents=True, exist_ok=True)
-    for book_id in range(1, 11):
+    for book_id in range(start_id, end_id + 1):
         try:
             book_url = f'https://tululu.org/b{book_id}'
             download_url = f'https://tululu.org/txt.php?id={book_id}'
@@ -73,8 +80,13 @@ if __name__ == '__main__':
             book_info = get_book_info(book_page)
             download_txt(download_page, book_info['book_title'], book_id, books_dir)
             download_image(download_page, book_info['img_url'], images_dir)
+            print(f'Название: {book_info["book_title"]}')
+            print(f'Автор: {book_info["author"]}')
+            print()
 
         except requests.HTTPError:
             pass
 
 
+if __name__ == '__main__':
+    main()
