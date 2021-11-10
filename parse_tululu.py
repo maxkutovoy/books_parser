@@ -55,7 +55,7 @@ def download_image(response, img_url, folder='images/'):
 def main():
     parser = argparse.ArgumentParser(description='Программа скачивает с сайта https://tululu.org')
     parser.add_argument('start_id', help='Начальная страница', nargs='?', default=1, type=int)
-    parser.add_argument('end_page', help='Конечная страница', nargs='?', default=10, type=int)
+    parser.add_argument('end_id', help='Конечная страница', nargs='?', default=10, type=int)
     args = parser.parse_args()
     start_id = args.start_id
     end_id = args.end_id
