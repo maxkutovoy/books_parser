@@ -15,7 +15,7 @@ def check_for_redirect(response):
 
 def get_book_info(book_soup):
     title_tag = book_soup.find('h1')
-    book_title, author = title_tag.text.split('   ::   ')
+    book_title, author = (text.strip() for text in title_tag.text.split('::'))
 
     img_path = book_soup.find(class_="bookimage").find('img')['src']
     img_url = (urljoin('https://tululu.org', img_path))
