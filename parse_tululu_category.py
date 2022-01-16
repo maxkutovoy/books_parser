@@ -1,12 +1,9 @@
-import argparse
 import json
 from itertools import count
-import os
 from pathlib import Path
 from urllib.parse import urljoin, unquote, urlsplit
 
 from bs4 import BeautifulSoup
-from pathvalidate import sanitize_filename
 import requests
 
 from book_services import check_for_redirect, get_book_info, download_txt, \
