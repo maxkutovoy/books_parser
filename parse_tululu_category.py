@@ -1,5 +1,6 @@
 import argparse
 import json
+from itertools import count
 import os
 from pathlib import Path
 from urllib.parse import urljoin, unquote, urlsplit
@@ -13,32 +14,44 @@ from book_services import check_for_redirect, get_book_info, download_txt, \
 
 
 def main():
+
     base_url = 'https://tululu.org'
+    download_url = f'https://tululu.org/txt.php'
 
     books_dir = 'books'
     images_dir = 'images'
     Path(books_dir).mkdir(parents=True, exist_ok=True)
     Path(images_dir).mkdir(parents=True, exist_ok=True)
 
-    pages_count = 1
+    start_page = 1
+    end_page = 2
 
-    for page_number in range(1, pages_count + 1):
+    for page_number in count(start_page, 1):
+        print(f'Page number: {page_number}')
+        try:
+            category_books_url = f'https://tululu.org/l55/{page_number}'
+            category_books_response = requests.get(category_books_url)
+            category_books_response.raise_for_status()
+            check_for_redirect(category_books_response)
+        except requests.HTTPError:
+            print('Страница не найдена, нечего скачивать')
+            break
 
-        sifi_books_url = f'https://tululu.org/l55/{page_number}'
-        sifi_books_response = requests.get(sifi_books_url)
-
-        sifi_books_soup = BeautifulSoup(sifi_books_response.text, 'lxml')
-        books_on_page = sifi_books_soup.find_all('table', class_='d_book')
+        category_books_soup = BeautifulSoup(
+            category_books_response.text,
+            'lxml'
+        )
+        books_on_page = category_books_soup.select('table.d_book')
 
         books_info = []
 
         for book in books_on_page:
 
-            book_href = book.find('a')['href']
+            book_href = book.select_one('a')['href']
             book_id = book_href.replace('/b', '').replace('/', '')
             book_url = urljoin(base_url, book_href)
+            print(book_url)
 
-            download_url = f'https://tululu.org/txt.php'
             download_params = {
                 'id': book_id
             }
@@ -71,9 +84,17 @@ def main():
             except requests.HTTPError:
                 pass
 
-        with open('books_description.json', 'a',
-                  encoding='utf8') as my_file:
-            json.dump(books_info, my_file, indent=4, ensure_ascii=False)
+        with open('books_description.json', 'a', encoding='utf8') as my_file:
+            json.dump(
+                books_info,
+                my_file,
+                indent=4,
+                ensure_ascii=False
+            )
+
+        if page_number == end_page:
+            print('Все скачали')
+            break
 
 
 if __name__ == '__main__':
