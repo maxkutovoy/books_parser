@@ -1,60 +1,21 @@
 import argparse
 import os
 from pathlib import Path
-from urllib.parse import urljoin, unquote, urlsplit
 
 from bs4 import BeautifulSoup
-from pathvalidate import sanitize_filename
 import requests
 
-
-def check_for_redirect(response):
-    if response.history:
-        raise requests.HTTPError
-
-
-def get_book_info(book_soup):
-    title_tag = book_soup.find('h1')
-    book_title, author = (text.strip() for text in title_tag.text.split('::'))
-
-    img_path = book_soup.find(class_="bookimage").find('img')['src']
-    img_url = (urljoin('https://tululu.org', img_path))
-
-    comments_tag = book_soup.find_all('div', class_="texts")
-    comments = [comment.find('span', class_='black').text for comment in comments_tag]
-
-    genres_tag = book_soup.find('span', class_="d_book").find_all('a')
-    genres = [genre.text for genre in genres_tag]
-
-    book_info = {
-        'book_title': book_title,
-        'author': author,
-        'img_url': img_url,
-        'comments': comments,
-        'genres': genres,
-    }
-    return book_info
-
-
-def download_txt(response, book_title, book_id, folder='books/'):
-    filename = f'{book_id}. {sanitize_filename(book_title)}'
-    filepath = os.path.join(folder, filename)
-    with open(f'{filepath}.txt', 'w') as book:
-        book.write(response.text)
-
-
-def download_image(response, img_url, folder='images/'):
-    parsed_url = urlsplit(img_url)
-    filename = os.path.split(unquote(parsed_url.path))[1]
-    filepath = os.path.join(folder, filename)
-    with open(f'{filepath}', 'wb') as book:
-        book.write(response.content)
+from book_services import check_for_redirect, get_book_info, download_txt, \
+    download_image
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Программа скачивает книги с сайта https://tululu.org')
-    parser.add_argument('start_id', help='Начальная страница', nargs='?', default=1, type=int)
-    parser.add_argument('end_id', help='Конечная страница', nargs='?', default=10, type=int)
+    parser = argparse.ArgumentParser(
+        description='Программа скачивает книги с сайта https://tululu.org')
+    parser.add_argument('start_id', help='Начальная страница', nargs='?',
+                        default=1, type=int)
+    parser.add_argument('end_id', help='Конечная страница', nargs='?',
+                        default=10, type=int)
     args = parser.parse_args()
 
     books_dir = 'books'
@@ -70,7 +31,8 @@ def main():
                 'id': book_id
             }
 
-            downloaded_book_response = requests.get(download_url, download_params)
+            downloaded_book_response = requests.get(download_url,
+                                                    download_params)
             downloaded_book_response.raise_for_status()
             check_for_redirect(downloaded_book_response)
 
@@ -79,9 +41,11 @@ def main():
             book_info_soup = BeautifulSoup(book_info_response.text, 'lxml')
 
             book_info = get_book_info(book_info_soup)
-            download_txt(downloaded_book_response, book_info['book_title'], book_id, books_dir)
-            download_image(downloaded_book_response, book_info['img_url'], images_dir)
-            print(f'Название: {book_info["book_title"]}')
+            download_txt(downloaded_book_response, book_info['title'],
+                         book_id, books_dir)
+            download_image(downloaded_book_response, book_info['img_url'],
+                           images_dir)
+            print(f'Название: {book_info["title"]}')
             print(f'Автор: {book_info["author"]}')
             print()
         except requests.HTTPError:

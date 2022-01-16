@@ -113,3 +113,4 @@ myenv/
 .mypy_cache/
 
 /books/
+/books_description.json
