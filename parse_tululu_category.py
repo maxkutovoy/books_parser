@@ -14,6 +14,13 @@ from book_services import check_for_redirect, get_book_info, download_txt, \
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description='Программа скачивает книги с сайта https://tululu.org' \
+        'из категории "Научная фантастика"')
+    parser.add_argument('start_page', help='Начальная страница', nargs='?',
+                        default=1, type=int)
+    parser.add_argument('end_page', help='Конечная страница', nargs='?',
+                        type=int)
 
     base_url = 'https://tululu.org'
     download_url = f'https://tululu.org/txt.php'
@@ -23,8 +30,9 @@ def main():
     Path(books_dir).mkdir(parents=True, exist_ok=True)
     Path(images_dir).mkdir(parents=True, exist_ok=True)
 
-    start_page = 1
-    end_page = 2
+    args = parser.parse_args()
+    start_page = args.start_page
+    end_page = args.end_page
 
     for page_number in count(start_page, 1):
         print(f'Page number: {page_number}')
