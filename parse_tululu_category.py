@@ -12,27 +12,25 @@ import requests
 from book_services import check_for_redirect, get_book_info, download_txt, \
     download_image
 
+from arguments import create_parser
+
 
 def main():
-    parser = argparse.ArgumentParser(
-        description='Программа скачивает книги с сайта https://tululu.org' \
-        'из категории "Научная фантастика"')
-    parser.add_argument('start_page', help='Начальная страница', nargs='?',
-                        default=1, type=int)
-    parser.add_argument('end_page', help='Конечная страница', nargs='?',
-                        type=int)
+    parser = create_parser()
 
     base_url = 'https://tululu.org'
     download_url = f'https://tululu.org/txt.php'
+
+    args = parser.parse_args()
+    start_page = args.start_page
+    end_page = args.end_page
 
     books_dir = 'books'
     images_dir = 'images'
     Path(books_dir).mkdir(parents=True, exist_ok=True)
     Path(images_dir).mkdir(parents=True, exist_ok=True)
 
-    args = parser.parse_args()
-    start_page = args.start_page
-    end_page = args.end_page
+    books_info = []
 
     for page_number in count(start_page, 1):
         print(f'Page number: {page_number}')
@@ -50,8 +48,6 @@ def main():
             'lxml'
         )
         books_on_page = category_books_soup.select('table.d_book')
-
-        books_info = []
 
         for book in books_on_page:
 
@@ -73,36 +69,54 @@ def main():
                 book = requests.get(book_url)
                 book_soup = BeautifulSoup(book.text, 'lxml')
                 book_info = get_book_info(book_soup)
-                book_info['book_path'] = download_txt(
-                    downloaded_book_response,
-                    book_info['title'],
-                    book_id,
-                    books_dir,
-                )
 
-                book_info['img_src'] = download_image(
-                    downloaded_book_response,
-                    book_info['img_url'],
-                    images_dir,
-                )
+                if args.skip_txt:
+                    book_info['book_path'] = ''
+                else:
+                    book_info['book_path'] = download_txt(
+                        downloaded_book_response,
+                        book_info['title'],
+                        book_id,
+                        books_dir,
+                    )
 
-                del book_info['img_url']
+                if args.skip_imgs:
+                    book_info['img_src'] = ''
+                else:
+                    book_info['img_src'] = download_image(
+                        downloaded_book_response,
+                        book_info['img_url'],
+                        images_dir,
+                    )
+                    del book_info['img_url']
+
                 books_info.append(book_info)
 
             except requests.HTTPError:
                 pass
 
-        with open('books_description.json', 'a', encoding='utf8') as my_file:
-            json.dump(
-                books_info,
-                my_file,
-                indent=4,
-                ensure_ascii=False
-            )
-
         if page_number == end_page:
             print('Все скачали')
             break
+
+    if args.json_path:
+        Path(args.json_path).mkdir(parents=True, exist_ok=True)
+        path = f'{args.json_path}/books_description.json'
+    else:
+        path = 'books_description.json'
+
+    with open(path, 'a', encoding='utf8') as my_file:
+        json.dump(
+            books_info,
+            my_file,
+            indent=4,
+            ensure_ascii=False
+        )
+
+    if args.dest_folder:
+        path = Path("parser_tululu_category.py").resolve()
+        print('Все скачанные материалы находятся в каталоге:'
+              f'\n{path.parent}')
 
 
 if __name__ == '__main__':
