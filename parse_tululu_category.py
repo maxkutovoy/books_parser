@@ -14,11 +14,11 @@ def get_books():
     sifi_books_response = requests.get(sifi_books_url)
 
     sifi_books_soup = BeautifulSoup(sifi_books_response.text, 'lxml')
-    book = sifi_books_soup.find('table', class_='d_book').find('a')
-
-    book_url = urljoin(base_url, book['href'])
-
-    print(book_url)
+    books_on_page = sifi_books_soup.find_all('table', class_='d_book')
+    for book in books_on_page:
+        book_href = book.find('a')['href']
+        book_url = urljoin(base_url, book_href)
+        print(book_url)
 
 
 get_books()
