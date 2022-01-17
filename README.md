@@ -67,7 +67,7 @@ python3 parse_tululu_category.py 1 100
 
 Например:
 ```sh
-python3 parse_tululu_category.py 1 100 --skip_imgs json_path 
+python3 parse_tululu_category.py 1 100 --skip_imgs --json_path 
 /home/user/my_directory
 ```
 
