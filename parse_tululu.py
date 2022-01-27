@@ -5,8 +5,9 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 import requests
 
-from book_services import check_for_redirect, get_book_info, download_txt, \
-    download_image
+from book_services import (
+    check_for_redirect, get_book_info, download_txt, download_image
+)
 
 
 def main():
