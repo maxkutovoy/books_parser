@@ -113,10 +113,10 @@ def main():
     else:
         path = 'books_description.json'
 
-    with open(path, 'a', encoding='utf8') as my_file:
+    with open(path, 'a', encoding='utf8') as books_db:
         json.dump(
             books_info,
-            my_file,
+            books_db,
             indent=4,
             ensure_ascii=False
         )
