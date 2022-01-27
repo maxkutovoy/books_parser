@@ -1,4 +1,5 @@
 import json
+import os
 from itertools import count
 from pathlib import Path
 from urllib.parse import urljoin, unquote, urlsplit
@@ -27,17 +28,17 @@ def main():
     start_page = args.start_page
     end_page = args.end_page
 
+    books_dir = 'books'
+    images_dir = 'images'
+    Path(books_dir).mkdir(parents=True, exist_ok=True)
+    Path(images_dir).mkdir(parents=True, exist_ok=True)
+
     if not end_page or end_page > last_category_page:
         end_page = last_category_page
         print(
             f'В данной категории всего {last_category_page}'
             'страниц, качаем все'
         )
-
-    books_dir = 'books'
-    images_dir = 'images'
-    Path(books_dir).mkdir(parents=True, exist_ok=True)
-    Path(images_dir).mkdir(parents=True, exist_ok=True)
 
     books_info = []
 
@@ -121,8 +122,21 @@ def main():
 
     if args.dest_folder:
         path = Path("parser_tululu_category.py").resolve()
-        print('Все скачанные материалы находятся в каталоге:'
-              f'\n{path.parent}')
+        path_to_books = os.path.join(path.parent, books_dir)
+        path_to_images = os.path.join(path.parent, images_dir)
+        print(
+            'Родительский каталог проекта (там по умолчанию  лежит json файл '
+            'с информацией о скаченных книгах):'
+            f'\n{path.parent}\n'
+        )
+        print(
+            'Книги находятся в каталоге:'
+            f'\n{path_to_books}\n'
+        )
+        print(
+            'Обложки к книгам находятся в каталоге:'
+            f'\n{path_to_images}\n'
+        )
 
 
 if __name__ == '__main__':
