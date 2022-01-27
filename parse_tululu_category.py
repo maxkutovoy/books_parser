@@ -31,7 +31,6 @@ def main():
     books_info = []
 
     for page_number in count(start_page, 1):
-        print(f'Page number: {page_number}')
         try:
             category_books_url = f'https://tululu.org/l55/{page_number}'
             category_books_response = requests.get(category_books_url)
@@ -52,7 +51,6 @@ def main():
             book_href = book.select_one('a')['href']
             book_id = book_href.replace('/b', '').replace('/', '')
             book_url = urljoin(base_url, book_href)
-            print(book_url)
 
             download_params = {
                 'id': book_id

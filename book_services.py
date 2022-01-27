@@ -22,10 +22,6 @@ def get_book_info(book_soup):
 
     genres_tag = book_soup.select('span.d_book a')
     genres = [genre.text for genre in genres_tag]
-    print(genres)
-
-    # genres_tag = book_soup.find('span', class_="d_book").find_all('a')
-    # genres = [genre.text for genre in genres_tag]
 
     book_info = {
         'title': book_title,
