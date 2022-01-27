@@ -41,9 +41,10 @@ def main():
 
     books_info = []
 
-    for page_number in range(start_page, end_page):
+    for page_number in range(start_page, end_page+1):
         try:
-            category_books_url = f'https://tululu.org/l55/{page_number}'
+            category_page = f'{category}/{page_number}'
+            category_books_url = urljoin(base_url, category_page)
             category_books_response = requests.get(category_books_url)
             category_books_response.raise_for_status()
             check_for_redirect(category_books_response)
@@ -107,11 +108,8 @@ def main():
 
     print('Все скачали')
 
-    if args.json_path:
-        Path(args.json_path).mkdir(parents=True, exist_ok=True)
-        path = f'{args.json_path}/books_description.json'
-    else:
-        path = 'books_description.json'
+    Path(args.json_path).mkdir(parents=True, exist_ok=True)
+    path = f'{args.json_path}/books_description.json'
 
     with open(path, 'a', encoding='utf8') as books_db:
         json.dump(
