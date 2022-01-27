@@ -4,6 +4,8 @@ from urllib.parse import urljoin, unquote, urlsplit
 import requests
 from pathvalidate import sanitize_filename
 
+from bs4 import BeautifulSoup
+
 
 def check_for_redirect(response):
     if response.history:
@@ -33,6 +35,24 @@ def get_book_info(book_soup):
         'genres': genres,
     }
     return book_info
+
+
+def get_last_category_page(base_url, category):
+    try:
+        category_url = urljoin(base_url, category)
+        category_start_page_response = requests.get(category_url)
+        category_start_page_response.raise_for_status()
+        check_for_redirect(category_start_page_response)
+    except requests.HTTPError:
+        print('Нет такой категории, попробуй другую')
+        exit()
+
+    category_start_page_soup = BeautifulSoup(
+        category_start_page_response.text,
+        'lxml'
+    )
+    last_category_page = category_start_page_soup.select('p.center a')[-1].text
+    return int(last_category_page)
 
 
 def download_txt(response, book_title, book_id, folder='books/'):

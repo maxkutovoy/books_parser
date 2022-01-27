@@ -11,17 +11,28 @@ from book_services import (
 )
 
 from arguments import create_parser
+from book_services import get_last_category_page
 
 
 def main():
     parser = create_parser()
 
     base_url = 'https://tululu.org'
-    download_url = f'https://tululu.org/txt.php'
+    download_url = urljoin(base_url, 'txt.php')
+    category = 'l55/'
+
+    last_category_page = get_last_category_page(base_url, category)
 
     args = parser.parse_args()
     start_page = args.start_page
     end_page = args.end_page
+
+    if not end_page or end_page > last_category_page:
+        end_page = last_category_page
+        print(
+            f'В данной категории всего {last_category_page}'
+            'страниц, качаем все'
+        )
 
     books_dir = 'books'
     images_dir = 'images'
@@ -30,21 +41,21 @@ def main():
 
     books_info = []
 
-    for page_number in count(start_page, 1):
+    for page_number in range(start_page, end_page):
         try:
             category_books_url = f'https://tululu.org/l55/{page_number}'
             category_books_response = requests.get(category_books_url)
             category_books_response.raise_for_status()
             check_for_redirect(category_books_response)
-        except requests.HTTPError:
-            print('Страница не найдена, нечего скачивать')
-            break
 
-        category_books_soup = BeautifulSoup(
-            category_books_response.text,
-            'lxml'
-        )
-        books_on_page = category_books_soup.select('table.d_book')
+            category_books_soup = BeautifulSoup(
+                category_books_response.text,
+                'lxml'
+            )
+            books_on_page = category_books_soup.select('table.d_book')
+
+        except requests.HTTPError:
+            print('Страница не найдена, идем на следующую')
 
         for book in books_on_page:
 
@@ -91,9 +102,7 @@ def main():
             except requests.HTTPError:
                 pass
 
-        if page_number == end_page:
-            print('Все скачали')
-            break
+    print('Все скачали')
 
     if args.json_path:
         Path(args.json_path).mkdir(parents=True, exist_ok=True)
