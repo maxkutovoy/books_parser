@@ -1,13 +1,8 @@
-from pathvalidate import sanitize_filename
-import requests
-
 import os
-from pathlib import Path
 from urllib.parse import urljoin, unquote, urlsplit
 
-from bs4 import BeautifulSoup
-from pathvalidate import sanitize_filename
 import requests
+from pathvalidate import sanitize_filename
 
 
 def check_for_redirect(response):
