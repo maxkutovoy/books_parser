@@ -11,18 +11,21 @@ def check_for_redirect(response):
 
 
 def get_book_info(book_soup):
-    title_tag = book_soup.find('h1')
+    title_tag = book_soup.select_one('h1')
     book_title, author = (text.strip() for text in title_tag.text.split('::'))
 
-    img_path = book_soup.find(class_="bookimage").find('img')['src']
+    img_path = book_soup.select_one('.bookimage img')['src']
     img_url = (urljoin('https://tululu.org', img_path))
 
-    comments_tag = book_soup.find_all('div', class_="texts")
-    comments = [comment.find('span', class_='black').text for comment in
-                comments_tag]
+    comments_tag = book_soup.select('div.texts span.black')
+    comments = [comment.text for comment in comments_tag]
 
-    genres_tag = book_soup.find('span', class_="d_book").find_all('a')
+    genres_tag = book_soup.select('span.d_book a')
     genres = [genre.text for genre in genres_tag]
+    print(genres)
+
+    # genres_tag = book_soup.find('span', class_="d_book").find_all('a')
+    # genres = [genre.text for genre in genres_tag]
 
     book_info = {
         'title': book_title,
