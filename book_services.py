@@ -55,7 +55,7 @@ def get_last_category_page(base_url, category):
     return int(last_category_page)
 
 
-def download_txt(response, book_title, book_id, folder='books/'):
+def save_book_text(response, book_title, book_id, folder='books/'):
     filename = f'{sanitize_filename(book_title)}'
     filepath = os.path.join(folder, filename)
     with open(f'{filepath}.txt', 'w') as book:
@@ -64,7 +64,7 @@ def download_txt(response, book_title, book_id, folder='books/'):
     return f'{filepath}.txt'
 
 
-def download_image(response, img_url, folder='images/'):
+def save_book_image(response, img_url, folder='images/'):
     parsed_url = urlsplit(img_url)
     filename = os.path.split(unquote(parsed_url.path))[1]
     filepath = os.path.join(folder, filename)

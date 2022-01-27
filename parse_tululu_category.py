@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import requests
 
 from book_services import (
-    check_for_redirect, get_book_info, download_txt, download_image
+    check_for_redirect, get_book_info, save_book_text, save_book_image
 )
 
 from arguments import create_parser
@@ -80,7 +80,7 @@ def main():
                 if args.skip_txt:
                     book_info['book_path'] = ''
                 else:
-                    book_info['book_path'] = download_txt(
+                    book_info['book_path'] = save_book_text(
                         downloaded_book_response,
                         book_info['title'],
                         book_id,
@@ -90,7 +90,7 @@ def main():
                 if args.skip_imgs:
                     book_info['img_src'] = ''
                 else:
-                    book_info['img_src'] = download_image(
+                    book_info['img_src'] = save_book_image(
                         downloaded_book_response,
                         book_info['img_url'],
                         images_dir,
@@ -98,6 +98,9 @@ def main():
                     del book_info['img_url']
 
                 books_info.append(book_info)
+                print(f'Название: {book_info["title"]}')
+                print(f'Автор: {book_info["author"]}')
+                print()
 
             except requests.HTTPError:
                 pass

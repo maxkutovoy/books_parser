@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import requests
 
 from book_services import (
-    check_for_redirect, get_book_info, download_txt, download_image
+    check_for_redirect, get_book_info, save_book_text, save_book_image
 )
 
 
@@ -42,10 +42,10 @@ def main():
             book_info_soup = BeautifulSoup(book_info_response.text, 'lxml')
 
             book_info = get_book_info(book_info_soup)
-            download_txt(downloaded_book_response, book_info['title'],
-                         book_id, books_dir)
-            download_image(downloaded_book_response, book_info['img_url'],
-                           images_dir)
+            save_book_text(downloaded_book_response, book_info['title'],
+                           book_id, books_dir)
+            save_book_image(downloaded_book_response, book_info['img_url'],
+                            images_dir)
             print(f'Название: {book_info["title"]}')
             print(f'Автор: {book_info["author"]}')
             print()
