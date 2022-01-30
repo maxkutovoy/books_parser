@@ -12,7 +12,7 @@ from book_services import (
 )
 
 from arguments import create_parser
-from book_services import get_last_category_page
+from book_services import get_category_last_page_number
 
 
 def main():
@@ -22,7 +22,10 @@ def main():
     download_url = urljoin(base_url, 'txt.php')
     category = 'l55/'
 
-    last_category_page = get_last_category_page(base_url, category)
+    category_last_page_number = get_category_last_page_number(
+        base_url,
+        category
+    )
 
     args = parser.parse_args()
     start_page = args.start_page
@@ -33,10 +36,10 @@ def main():
     Path(books_dir).mkdir(parents=True, exist_ok=True)
     Path(images_dir).mkdir(parents=True, exist_ok=True)
 
-    if not end_page or end_page > last_category_page:
-        end_page = last_category_page
+    if not end_page or end_page > category_last_page_number:
+        end_page = category_last_page_number
         print(
-            f'В данной категории всего {last_category_page}'
+            f'В данной категории всего {category_last_page_number}'
             'страниц, качаем все'
         )
 

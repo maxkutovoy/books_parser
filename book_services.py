@@ -37,7 +37,7 @@ def get_book_info(book_soup):
     return book_info
 
 
-def get_last_category_page(base_url, category):
+def get_category_last_page_number(base_url, category):
     try:
         category_url = urljoin(base_url, category)
         category_start_page_response = requests.get(category_url)
@@ -51,8 +51,8 @@ def get_last_category_page(base_url, category):
         category_start_page_response.text,
         'lxml'
     )
-    last_category_page = category_start_page_soup.select('p.center a')[-1].text
-    return int(last_category_page)
+    category_last_page_number = category_start_page_soup.select('p.center a')[-1].text
+    return int(category_last_page_number)
 
 
 def save_book_text(response, book_title, book_id, folder='books/'):
