@@ -51,7 +51,9 @@ def get_category_last_page_number(base_url, category):
         category_start_page_response.text,
         'lxml'
     )
-    category_last_page_number = category_start_page_soup.select('p.center a')[-1].text
+    category_last_page_number = category_start_page_soup\
+        .select_one('p.center a:last-child')\
+        .text
     return int(category_last_page_number)
 
 
