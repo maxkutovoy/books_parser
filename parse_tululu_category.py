@@ -1,6 +1,4 @@
 import json
-import os
-from itertools import count
 from pathlib import Path
 from urllib.parse import urljoin, unquote, urlsplit
 
@@ -31,8 +29,8 @@ def main():
     start_page = args.start_page
     end_page = args.end_page
 
-    books_dir = 'books'
-    images_dir = 'images'
+    books_dir = f'{args.dest_folder}/books'
+    images_dir = f'{args.dest_folder}/images'
     Path(books_dir).mkdir(parents=True, exist_ok=True)
     Path(images_dir).mkdir(parents=True, exist_ok=True)
 
@@ -112,8 +110,11 @@ def main():
 
     print('Все скачали')
 
-    Path(args.json_path).mkdir(parents=True, exist_ok=True)
-    path = f'{args.json_path}/books_description.json'
+    if args.json_path:
+        Path(args.json_path).mkdir(parents=True, exist_ok=True)
+        path = f'{args.json_path}/books_description.json'
+    else:
+        path = f'{args.dest_folder}/books_description.json'
 
     with open(path, 'a', encoding='utf8') as books_db:
         json.dump(
@@ -121,24 +122,6 @@ def main():
             books_db,
             indent=4,
             ensure_ascii=False
-        )
-
-    if args.dest_folder:
-        path = Path("parser_tululu_category.py").resolve()
-        path_to_books = os.path.join(path.parent, books_dir)
-        path_to_images = os.path.join(path.parent, images_dir)
-        print(
-            'Родительский каталог проекта (там по умолчанию  лежит json файл '
-            'с информацией о скаченных книгах):'
-            f'\n{path.parent}\n'
-        )
-        print(
-            'Книги находятся в каталоге:'
-            f'\n{path_to_books}\n'
-        )
-        print(
-            'Обложки к книгам находятся в каталоге:'
-            f'\n{path_to_images}\n'
         )
 
 

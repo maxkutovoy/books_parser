@@ -23,9 +23,8 @@ def create_parser():
 
     parser.add_argument(
         '--dest_folder',
-        help='Показывает путь к каталогу с результатами парсинга',
-        action='store_true',
-        default=False,
+        help='Задает путь к каталогу с результатами парсинга',
+        default='.',
     )
 
     parser.add_argument(
