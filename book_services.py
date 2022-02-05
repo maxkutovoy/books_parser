@@ -64,11 +64,14 @@ def save_book_text(response, book_title, book_id, folder='books/'):
     return f'{filepath}.txt'
 
 
-def save_book_image(response, img_url, folder='images/'):
+def save_book_image(img_url, folder='images/'):
+
+    img = requests.get(img_url)
+
     parsed_url = urlsplit(img_url)
     filename = os.path.split(unquote(parsed_url.path))[1]
     filepath = os.path.join(folder, filename)
     with open(f'{filepath}', 'wb') as book:
-        book.write(response.content)
+        book.write(img.content)
 
     return filepath

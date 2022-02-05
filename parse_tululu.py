@@ -44,7 +44,7 @@ def main():
             book_info = get_book_info(book_info_soup)
             save_book_text(downloaded_book_response, book_info['title'],
                            book_id, books_dir)
-            save_book_image(downloaded_book_response, book_info['img_url'],
+            save_book_image(book_info['img_url'],
                             images_dir)
             print(f'Название: {book_info["title"]}')
             print(f'Автор: {book_info["author"]}')

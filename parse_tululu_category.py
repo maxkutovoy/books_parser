@@ -93,7 +93,6 @@ def main():
                     book_info['img_src'] = ''
                 else:
                     book_info['img_src'] = save_book_image(
-                        downloaded_book_response,
                         book_info['img_url'],
                         images_dir,
                     )
