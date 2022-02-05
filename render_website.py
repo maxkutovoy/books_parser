@@ -1,8 +1,11 @@
-from jinja2 import Environment, FileSystemLoader, select_autoescape
 import json
-from livereload import Server, shell
-from more_itertools import chunked
+import os
+from pathlib import Path
 from pprint import pprint
+
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+from livereload import Server
+from more_itertools import chunked
 
 
 def render_site():
@@ -13,16 +16,25 @@ def render_site():
 
     template = env.get_template('template.html')
 
+    pages_dir = 'pages'
+    Path(pages_dir).mkdir(parents=True, exist_ok=True)
     with open("books_description.json", "r") as my_file:
         books = json.load(my_file)
 
-    splited_books = list(chunked(books, 2))
+    books_in_page = list(chunked(books, 10))
 
-    rendered_page = template.render(books=splited_books)
+    for page_number, page in enumerate(books_in_page):
 
-    with open('index.html', 'w', encoding="utf8") as file:
-        file.write(rendered_page)
-    print("Обновили HTML")
+        books_in_columns = list(chunked(page, 2))
+        pprint(books_in_columns)
+        rendered_page = template.render(books=books_in_columns)
+
+        filename = f'index{page_number}.html'
+        filepath = os.path.join(pages_dir, filename)
+
+        with open(filepath, 'w', encoding="utf8") as file:
+            file.write(rendered_page)
+        print(f"Сохранили {filepath}")
 
 
 def on_reload():
