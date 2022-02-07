@@ -1,4 +1,5 @@
 import json
+import math
 import os
 from pathlib import Path
 from pprint import pprint
@@ -21,16 +22,23 @@ def render_site():
     with open("books_description.json", "r") as my_file:
         books = json.load(my_file)
 
-    books_in_page = list(chunked(books, 10))
+    books_in_page_count = 10
+    books_in_page = list(chunked(books, books_in_page_count))
+    pages_count = math.ceil(len(books)/books_in_page_count)
+    print(pages_count)
 
-    for page_number, page in enumerate(books_in_page):
-
-        books_in_columns = list(chunked(page, 2))
-        pprint(books_in_columns)
-        rendered_page = template.render(books=books_in_columns)
-
+    for page_number, page in enumerate(books_in_page, start=1):
         filename = f'index{page_number}.html'
         filepath = os.path.join(pages_dir, filename)
+        books_in_columns = list(chunked(page, 2))
+
+        rendered_page = template.render(
+            {
+                'books': books_in_columns,
+                'pages_count': pages_count,
+                'current_page': page_number,
+            }
+        )
 
         with open(filepath, 'w', encoding="utf8") as file:
             file.write(rendered_page)
