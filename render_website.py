@@ -42,7 +42,6 @@ def render_site():
 
         with open(filepath, 'w', encoding="utf8") as file:
             file.write(rendered_page)
-        print(f"Сохранили {filepath}")
 
 
 def on_reload():
