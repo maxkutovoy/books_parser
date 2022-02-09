@@ -25,7 +25,6 @@ def render_site():
     books_in_page_count = 10
     books_in_page = list(chunked(books, books_in_page_count))
     pages_count = math.ceil(len(books)/books_in_page_count)
-    print(pages_count)
 
     for page_number, page in enumerate(books_in_page, start=1):
         filename = f'index{page_number}.html'
