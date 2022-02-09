@@ -20,7 +20,8 @@
 </head>
 <body>
 <div class="container">
-  <nav aria-label="Page navigation example">
+  <nav aria-label="Page navigation">
+    <div class="mx-auto mt-3 mb-4" style="width: 200px;">
     <ul class="pagination">
       {% if current_page == 1 %}
       <li class="page-item disabled">
@@ -59,6 +60,7 @@
       </li>
       {% endif%}
     </ul>
+  </div>
   </nav>
 </div>
 {% for book in books %}
